@@ -2,6 +2,8 @@
 
 > This is a work-in-progress project
 
+![](rendering.png)
+
 ## Summary
 
 A physical key-like device for the Tesla Model S, with a built-in e-paper display.

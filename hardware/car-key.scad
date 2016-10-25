@@ -9,8 +9,8 @@ cornerRadius = 1.25;
 usbWidth = 8.1;
 usbHeight = 4;
 
-renderPart = "bottom"; // bottom, top, or all
-enableMockup = false;
+renderPart = "all"; // bottom, top, or all
+enableMockup = true;
 
 $fn=100;
 
