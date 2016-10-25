@@ -1,6 +1,8 @@
 screenWidthAndHeight = 24.5;
 
-boxWidth = 50;
+boxTopWidth = 60;
+boxBottomWidth = 40;
+boxBottomHeight = 43;
 boxHeight = 55;
 boxDepth = 10;
 thickness = 1;
@@ -9,8 +11,8 @@ cornerRadius = 1.25;
 usbWidth = 8.1;
 usbHeight = 4;
 
-renderPart = "all"; // bottom, top, or all
-enableMockup = true;
+renderPart = "top"; // bottom, top, or all
+enableMockup = false;
 
 $fn=100;
 
@@ -21,29 +23,28 @@ module screenCutOut() {
 module mainBox() {
 	difference() {
 		union() {
-			difference() {
-				minkowski() {
-					cylinder(boxDepth, d=boxWidth, center = true);
-					sphere(r=cornerRadius);
-				}
-
-				cylinder(boxDepth - thickness, d = boxWidth - thickness, center = true);
+			minkowski() {
+				cylinder(boxDepth, d=boxTopWidth, center = true);
+				sphere(r=cornerRadius);
 			}
 
-			translate([35 + 4, 0, 0])
+			translate([35 + 2.4, 0, 0])
 			minkowski() {
-				cube([30 + 10, 30, boxDepth], center = true);
+				cube([boxBottomHeight, boxBottomWidth, boxDepth], center = true);
 				sphere(r=cornerRadius);
 			}
 		}
 
-		translate([32.5 + 4, 0, 0])
-		cube([35 + 10, 30, boxDepth - thickness], center = true);
+		translate([32.5 + 2.4, 0, 0])
+		cube([boxBottomHeight + 5, boxBottomWidth, boxDepth - thickness], center = true);
+
+		cylinder(boxDepth - thickness, d = boxTopWidth - thickness, center = true);
 	}
 }
 
 module buttonCutout() {
-	cylinder(h=100, r=2);
+	translate([0, 0, 8])
+	cube([8, 20, 10], center = true);
 }
 
 module usbCutOut() {
@@ -52,6 +53,14 @@ module usbCutOut() {
 
 module standoff() {
 	cylinder(h=5, r=0.75);
+}
+
+module tallStandoff() {
+	translate([0, 0, -5])
+	union() {
+		cylinder(h=10, r=0.75);
+		cylinder(h=7, r=1.75);
+	}
 }
 
 module pcbStandOffs() {
@@ -67,16 +76,30 @@ module pcbStandOffs() {
 
 module screenStandOffs() {
 	translate([0, 0, 0])
-	standoff();
+	tallStandoff();
 
 	translate([0, 33.1, 0])
-	standoff();
+	tallStandoff();
 
 	translate([33.4, 0, 0])
-	standoff();
+	tallStandoff();
 
 	translate([33.4, 33.1, 0])
-	standoff();
+	tallStandoff();
+}
+
+module buttonPcbStandOffs() {
+	translate([0, 0, 0])
+	tallStandoff();
+
+	translate([0, 27.7, 0])
+	tallStandoff();
+
+	translate([34.8, 0, 0])
+	tallStandoff();
+
+	translate([34.8, 27.7, 0])
+	tallStandoff();
 }
 
 difference() {
@@ -86,7 +109,13 @@ difference() {
 	translate([0, 0, 5])
 	screenCutOut();
 
-	translate([25, 0, 0])
+	translate([27, 0, 0])
+	buttonCutout();
+
+	translate([27 + 12, 0, 0])
+	buttonCutout();
+
+	translate([27 + (12 * 2), 0, 0])
 	buttonCutout();
 
 	translate([58, 0, -2])
@@ -96,21 +125,22 @@ difference() {
 
 	if (renderPart == "top") {
 		translate([0, 0, -topPartHeight])
-		cube([boxHeight + cornerRadius * 2 + 200, boxWidth + cornerRadius * 2, boxDepth + cornerRadius * 2], center = true);
+		cube([boxHeight + cornerRadius * 2 + 200, boxTopWidth + cornerRadius * 2, boxDepth + cornerRadius * 2], center = true);
 	} else if (renderPart == "bottom") {
 		translate([0, 0, boxDepth + (cornerRadius * 2) - topPartHeight])
-		cube([boxHeight + cornerRadius * 2 + 200, boxWidth + cornerRadius * 2, boxDepth + cornerRadius * 2], center = true);
+		cube([boxHeight + cornerRadius * 2 + 200, boxTopWidth + cornerRadius * 2, boxDepth + cornerRadius * 2], center = true);
 	}
 }
 
 if (renderPart != "top") {
 	translate([22 + 10, 0, 0])
 	pcbStandOffs();
-}
 
-if (renderPart != "bottom") {
-	//translate([-18, -17, 2.5])
-	//screenStandOffs();
+	translate([20, -13.75, 0])
+	buttonPcbStandOffs();
+
+	translate([-22, -17, 0])
+	screenStandOffs();
 }
 
 if (enableMockup) {
@@ -119,5 +149,8 @@ if (enableMockup) {
 		rotate([0, 0, 180])
 		translate([-52 - 10, -8, -4.7 + thickness])
 		import("vendor/Adafruit_Feather_Bluefruit_LE_32u4_wo_header.stl");
+
+		translate([36.5, 0, 2.5])
+		cube([44.5, 38.9, 1.65], center = true);
 	}
 }
