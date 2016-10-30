@@ -1,10 +1,10 @@
 screenWidthAndHeight = 24.5;
 
-boxTopWidth = 60;
+boxTopWidth = 63.75;
 boxBottomWidth = 40;
 boxBottomHeight = 43;
 boxHeight = 55;
-boxDepth = 10;
+boxDepth = 18;
 thickness = 1;
 cornerRadius = 1.25;
 
@@ -35,11 +35,21 @@ module mainBox() {
 			}
 		}
 
-		translate([32.5 + 2.4, 0, 0])
+		translate([34.9, 0, 0])
 		cube([boxBottomHeight + 5, boxBottomWidth, boxDepth - thickness], center = true);
 
 		cylinder(boxDepth - thickness, d = boxTopWidth - thickness, center = true);
+
+		keychainCutout();
 	}
+}
+
+module keychainCutout() {
+	translate([-28, 0, -5])
+	cube([1.25, 5, 20], center=true);
+
+	translate([-25, 0, -5])
+	cube([1.25, 5, 20], center=true);
 }
 
 module buttonCutout() {
@@ -52,15 +62,7 @@ module usbCutOut() {
 }
 
 module standoff() {
-	cylinder(h=5, r=0.75);
-}
-
-module tallStandoff() {
-	translate([0, 0, -5])
-	union() {
-		cylinder(h=10, r=0.75);
-		cylinder(h=7, r=1.75);
-	}
+	cylinder(h=7, r=0.75);
 }
 
 module pcbStandOffs() {
@@ -74,39 +76,81 @@ module pcbStandOffs() {
 	standoff();
 }
 
+module singleScreenStandOff() {
+	translate([0, 0, -5])
+	union() {
+		cylinder(h=12, r=0.9);
+		cylinder(h=9, r=1.75);
+	}
+}
+
 module screenStandOffs() {
 	translate([0, 0, 0])
-	tallStandoff();
+	singleScreenStandOff();
 
 	translate([0, 33.1, 0])
-	tallStandoff();
+	singleScreenStandOff();
 
 	translate([33.4, 0, 0])
-	tallStandoff();
+	singleScreenStandOff();
 
 	translate([33.4, 33.1, 0])
-	tallStandoff();
+	singleScreenStandOff();
+}
+
+module singleButtonPcbStandOff() {
+	translate([0, 0, -5])
+	union() {
+		cylinder(h=11, r=0.9);
+		cylinder(h=8, r=1.75);
+	}
 }
 
 module buttonPcbStandOffs() {
 	translate([0, 0, 0])
-	tallStandoff();
+	singleButtonPcbStandOff();
 
 	translate([0, 27.7, 0])
-	tallStandoff();
+	singleButtonPcbStandOff();
 
 	translate([34.8, 0, 0])
-	tallStandoff();
+	singleButtonPcbStandOff();
 
 	translate([34.8, 27.7, 0])
-	tallStandoff();
+	singleButtonPcbStandOff();
+}
+
+module snapFitWalls() {
+	snapFitTolerance = 0.75;
+	wallThickness = 1;
+
+	difference() {
+		union() {
+			// Outer
+			translate([34.9, 0, 9])
+			cube([boxBottomHeight + 5 - snapFitTolerance, boxBottomWidth - snapFitTolerance, thickness * 2], center = true);
+
+			translate([0, 0, 9])
+			cylinder(thickness * 2, d = boxTopWidth - thickness - snapFitTolerance, center = true);
+		}
+
+		union() {
+			// Inner
+			translate([34.9, 0, 9])
+			cube([boxBottomHeight + 5 - wallThickness - snapFitTolerance, boxBottomWidth - wallThickness - snapFitTolerance, thickness * 3], center = true);
+
+			translate([0, 0, 9])
+			cylinder(thickness * 3, d = boxTopWidth - thickness - wallThickness - snapFitTolerance, center = true);
+		}
+	}
 }
 
 difference() {
 	color("black")
+	translate([0, 0, 2.5])
 	mainBox();
 
-	translate([0, 0, 5])
+	translate([-3.75, 0, 8])
 	screenCutOut();
 
 	translate([27, 0, 0])
@@ -118,14 +162,14 @@ difference() {
 	translate([27 + (12 * 2), 0, 0])
 	buttonCutout();
 
-	translate([58, 0, -2])
+	translate([58, 0, -2 + 1.4])
 	usbCutOut();
 
 	topPartHeight = 1.8;
 
 	if (renderPart == "top") {
 		translate([0, 0, -topPartHeight])
-		cube([boxHeight + cornerRadius * 2 + 200, boxTopWidth + cornerRadius * 2, boxDepth + cornerRadius * 2], center = true);
+		cube([boxHeight + cornerRadius * 2 + 200, boxTopWidth + cornerRadius * 2, 5 + boxDepth + cornerRadius * 2], center = true);
 	} else if (renderPart == "bottom") {
 		translate([0, 0, boxDepth + (cornerRadius * 2) - topPartHeight])
 		cube([boxHeight + cornerRadius * 2 + 200, boxTopWidth + cornerRadius * 2, boxDepth + cornerRadius * 2], center = true);
@@ -133,7 +177,7 @@ difference() {
 }
 
 if (renderPart != "top") {
-	translate([22 + 10, 0, 0])
+	translate([31.5, 0, 0])
 	pcbStandOffs();
 
 	translate([20, -13.75, 0])
@@ -143,11 +187,15 @@ if (renderPart != "top") {
 	screenStandOffs();
 }
 
+if (renderPart == "top") {
+	snapFitWalls();
+}
+
 if (enableMockup) {
 	if (renderPart != "top") {
 		color("red")
 		rotate([0, 0, 180])
-		translate([-52 - 10, -8, -4.7 + thickness])
+		translate([-61.5, -8, -4.7 + thickness])
 		import("vendor/Adafruit_Feather_Bluefruit_LE_32u4_wo_header.stl");
 
 		translate([36.5, 0, 2.5])
