@@ -1,0 +1,18 @@
+PODS:
+  - ObjectMapper (2.2.1)
+  - PromiseKit/CorePromise (4.1.0)
+  - TeslaSwift (3.3.1):
+    - ObjectMapper (~> 2.0)
+    - PromiseKit/CorePromise (~> 4.0)
+
+DEPENDENCIES:
+  - TeslaSwift (~> 3.3)
+
+SPEC CHECKSUMS:
+  ObjectMapper: 41e43e1a89f8060ef5ea5d04ba852e269a621d68
+  PromiseKit: c98453ff78544c0ad5bb0ea980782e6875f47978
+  TeslaSwift: 92df0ced70f0e2a40193a1e877a452c2276d5fd4
+
+PODFILE CHECKSUM: 2c38473a2d7216f09134fa0629777a61665c33db
+
+COCOAPODS: 1.1.1

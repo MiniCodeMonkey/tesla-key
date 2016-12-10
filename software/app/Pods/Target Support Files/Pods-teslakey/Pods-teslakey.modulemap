@@ -1,0 +1,6 @@
+framework module Pods_teslakey {
+  umbrella header "Pods-teslakey-umbrella.h"
+
+  export *
+  module * { export * }
+}
